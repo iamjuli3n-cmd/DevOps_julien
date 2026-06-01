@@ -4,7 +4,6 @@
 Question 1-1 : Pourquoi utiliser l’option -e pour les variables d’environnement
             plutôt que de les écrire en dur dans le Dockerfile ?
 
-Réponse :
 Les variables d’environnement définies dans un Dockerfile (via ENV) sont figées
 dans l’image. Si vous y placez un mot de passe ou une clé API, toute personne
 ayant accès à l’image peut les voir. De plus, il faudrait reconstruire l’image
@@ -14,12 +13,10 @@ pour changer une valeur. L’option -e (ou le fichier .env) permet de :
 – Utiliser la même image en développement, recette et production.
 – Modifier le comportement d’un conteneur sans le reconstruire.
 
-Exemple : docker run -e "DB_PASSWORD=secret" mon_image
 
 
 Question 1-2 : Pourquoi attacher un volume au conteneur PostgreSQL ?
 
-Réponse :
 Par défaut, tout ce qui est écrit dans un conteneur disparaît à sa suppression.
 PostgreSQL stocke ses données dans /var/lib/postgresql/data. Sans volume,
 la base de données serait effacée à chaque redémarrage du conteneur.
@@ -32,13 +29,12 @@ Le volume rend les données persistantes :
 
 Question 1-3 : Construire une image pour la base de données
 
-a) Dockerfile minimal :
-----------------------
+Dockerfile minimal :
 FROM postgres:17.2-alpine
 COPY ./init-scripts/ /docker-entrypoint-initdb.d/
 
-b) Commandes pour construire l’image et lancer le conteneur :
---------------------------------------------------------------
+Commandes pour construire l’image et lancer le conteneur :
+
 # Construction
 docker build -t ma-base-de-donnees .
 
@@ -58,7 +54,6 @@ docker run -d \
 
 Question 1-4 : Pourquoi utiliser un multi‑stage build ? Détaillez chaque étape.
 
-Réponse :
 Le multi‑stage build permet de séparer l’environnement de compilation
 (build) de l’environnement d’exécution. L’image finale est beaucoup plus
 petite et ne contient pas les outils de construction (Maven, JDK complet,
@@ -91,7 +86,6 @@ ni code source.
 
 Question 1-5 : Pourquoi utiliser un reverse proxy (Apache / Nginx) ?
 
-Réponse :
 Un reverse proxy se place devant les services internes. Dans l’architecture
 3 tiers, il reçoit toutes les requêtes HTTP (port 80/443) et les répartit :
 
@@ -108,7 +102,6 @@ Avantages dans Docker :
 
 Question 1-6 : Pourquoi Docker Compose est‑il si important ?
 
-Réponse :
 Docker Compose déclare l’ensemble des services, réseaux et volumes dans un
 fichier YAML unique. Il remplace une longue série de commandes docker run
 manuellement.
@@ -139,45 +132,41 @@ docker compose config        Valide et affiche la configuration composée.
 
 Question 1-8 : Documentez votre fichier docker-compose.yml
 
-Voici un exemple complet pour l’architecture 3 tiers (HTTP, backend, base de
-données). Toutes les valeurs sensibles sont passées par variables d’environnement.
 
 ```yaml
-version: '3.8'
-
 services:
+  backend:
+    build: ./simpleapi
+    restart: on-failure
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3 # arrete de redemarrer apres 3 essais
+    networks:
+      - frontend-network # accede aux deux networks
+      - backend-network
+    depends_on:
+      - database #doit attendre le container database pour etre créé
+    environment:
+      - USER_DB_URL=${USER_DB_URL}
+      - USER_DB=${USER_DB}
+      - USER_DB_PASSWORD=${USER_DB_PASSWORD}
+
   database:
-    build: ./database
+    build: ./new_app
+    restart: unless-stopped # restart sauf si stoppé manuellement
     networks:
       - backend-network
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-    restart: unless-stopped
-
-  backend:
-    build: ./simpleapi
-    networks:
-      - backend-network
-      - frontend-network
-    depends_on:
-      - database
-    environment:
-      - DB_HOST=database
-      - DB_USER=${POSTGRES_USER}
-      - DB_PASSWORD=${POSTGRES_PASSWORD}
-      - DB_NAME=${POSTGRES_DB}
-    restart: on-failure
-    deploy:
-      restart_policy:
-        condition: on-failure
-        max_attempts: 3
+      - USER_DB_URL=${USER_DB_URL}
+      - USER_DB=${USER_DB}
+      - USER_DB_PASSWORD=${USER_DB_PASSWORD}
 
   httpd:
-    build: ./http_server
+    build: ./hhtp_server
+    restart: unless-stopped
     ports:
       - "80:80"
     networks:
@@ -185,12 +174,11 @@ services:
     depends_on:
       - backend
     environment:
-      - BACKEND_URL=http://backend:8080
-    restart: unless-stopped
+    - BACKEND_URL=${BACKEND_URL}
 
 networks:
-  frontend-network:   # réseau pour le proxy (exposé à l’hôte)
-  backend-network:    # réseau privé pour base + backend
+  frontend-network:
+  backend-network:
 
 volumes:
-  db-data:            # volume persistant pour PostgreSQL
+  db-data:
