@@ -1,9 +1,5 @@
 # DevOps_julien
 
-================================================================================
-                           DOCKER DISCOVERY TP – ANSWERS
-                           (Cours DevOps – Takima 2025/2026)
-================================================================================
 
 Question 1-1 : Pourquoi utiliser l’option -e pour les variables d’environnement
             plutôt que de les écrire en dur dans le Dockerfile ?
