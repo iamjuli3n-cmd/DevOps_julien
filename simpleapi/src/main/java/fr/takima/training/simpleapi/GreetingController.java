@@ -1,4 +1,4 @@
-package simpleapi.src.main.java.fr.takima.training.simpleapi;
+package fr.takima.training.simpleapi;
 
 import org.springframework.web.bind.annotation.*;
 
