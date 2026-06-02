@@ -30,7 +30,7 @@ jobs:
         with:
           context: ./simpleapi
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-simple-api:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/tp-devops-simple-api:latest
 
       # 2. La Database (J'ai repris ton dossier ./new_app)
       - name: Build image and push database
@@ -38,7 +38,7 @@ jobs:
         with:
           context: ./new_app 
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-database:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/tp-devops-database:latest
 
       # 3. Le serveur HTTPD (J'ai repris ton dossier ./hhtp_server)
       - name: Build image and push httpd
@@ -46,4 +46,4 @@ jobs:
         with:
           context: ./hhtp_server
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/tp-devops-httpd:latest
