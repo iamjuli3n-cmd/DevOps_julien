@@ -1,17 +1,14 @@
-name: Build and Push Images to Docker Hub
+name: 3. Build and Push Images to Docker Hub
 
 on:
   workflow_run:
-    workflows: ["Test Backend and Quality Gate"] # Écoute le premier fichier
+    workflows: ["2. SonarCloud Quality Gate"]
     types:
       - completed
-    branches:
-      - main
-      - master
 
 jobs:
   build-and-push-docker-image:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }} # Ne se lance que si les tests ont réussi
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-24.04
 
     steps:
@@ -32,7 +29,7 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/tp-devops-simple-api:latest
 
-      # 2. La Database (J'ai repris ton dossier ./new_app)
+      # 2. La Database
       - name: Build image and push database
         uses: docker/build-push-action@v6
         with:
@@ -40,7 +37,7 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/tp-devops-database:latest
 
-      # 3. Le serveur HTTPD (J'ai repris ton dossier ./hhtp_server)
+      # 3. Le serveur HTTPD
       - name: Build image and push httpd
         uses: docker/build-push-action@v6
         with:
