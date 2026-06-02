@@ -1,8 +1,8 @@
-name: 3. Build and Push Images to Docker Hub
+name: Continuous Delivery (CD)
 
 on:
   workflow_run:
-    workflows: ["2. SonarCloud Quality Gate"]
+    workflows: ["Continuous Integration (CI)"] # Écoute le fichier CI
     types:
       - completed
 
