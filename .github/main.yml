@@ -1,0 +1,53 @@
+# Nom du workflow qui apparaîtra dans l'onglet Actions de GitHub
+name: CI
+
+# Déclencheurs : à quels moments ce workflow va être exécuté
+on:
+  # On exécute le workflow lorsqu'on pousse du code (git push)
+  push:
+    # Sur toutes les branches (pas seulement main)
+    branches: [ '*' ]
+  # On exécute aussi lors d'une pull request vers la branche main
+  pull_request:
+    branches: [ main ]
+
+# Liste des jobs (tâches) à exécuter
+jobs:
+  # Nom du job : "build" (on aurait pu l'appeler autrement)
+  build:
+    # Type de machine virtuelle sur laquelle tourne le job
+    runs-on: ubuntu-latest
+
+    # Étapes du job (exécutées dans l'ordre)
+    steps:
+      # Étape 1 : récupère le code source du dépôt
+      - name: Checkout code
+        # Action officielle GitHub pour cloner le dépôt dans la machine virtuelle
+        uses: actions/checkout@v4
+
+      # Étape 2 : installer Java (JDK)
+      - name: Set up JDK 11
+        # Action officielle pour installer Java
+        uses: actions/setup-java@v4
+        with:
+          # Version 11 de Java (compatible avec la plupart des projets)
+          java-version: '11'
+          # Distribution Temurin (anciennement AdoptOpenJDK)
+          distribution: 'temurin'
+
+      # Étape 3 : mettre en cache les dépendances Maven (accélère les prochaines exécutions)
+      - name: Cache Maven dependencies
+        # Action officielle pour le cache
+        uses: actions/cache@v3
+        with:
+          # Dossier où Maven stocke les dépendances téléchargées
+          path: ~/.m2
+          # Clé unique pour sauvegarder/restaurer le cache : dépend du système d'exploitation et du pom.xml
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          # Si la clé exacte n'existe pas, on essaie une clé moins spécifique
+          restore-keys: ${{ runner.os }}-m2
+
+      # Étape 4 : compiler le code et exécuter les tests avec Maven
+      - name: Build and test with Maven
+        # Commande shell exécutée dans la machine virtuelle
+        run: mvn clean verify
