@@ -33,5 +33,5 @@ jobs:
           mvn -B verify sonar:sonar \
             -Dsonar.projectKey=iamjuli3n-cmd_DevOps_julien \
             -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
             "-Djacoco.skip=true" \
