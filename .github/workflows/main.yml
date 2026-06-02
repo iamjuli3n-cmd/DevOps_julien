@@ -69,6 +69,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           # Mets ici le nom de ton dossier contenant le Dockerfile d'HTTPD (ex: ./httpd)
-          context: ./http_server
+          context: ./hhtprver
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/tp-devops-httpd:latest
