@@ -28,7 +28,7 @@ jobs:
       - name: Build and test with Maven
         run: mvn clean verify "-Djacoco.skip=true" "-Dmaven.test.skip=true"
 
-  # define job to build and publish docker image
+  # JOB 2  job to build and publish docker image
   build-and-push-docker-image:
     needs: test-backend # run only when code is compiling and tests are passing
     runs-on: ubuntu-24.04
@@ -60,7 +60,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           # Mets ici le nom de ton dossier contenant le Dockerfile de ta BDD (ex: ./database)
-          context: ./database 
+          context: ./new_app
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-database:latest
 
@@ -69,6 +69,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           # Mets ici le nom de ton dossier contenant le Dockerfile d'HTTPD (ex: ./httpd)
-          context: ./httpd
+          context: ./http_server
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
