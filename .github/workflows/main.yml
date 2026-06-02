@@ -11,6 +11,9 @@ jobs:
   # JOB 1 : On lance les tests
   test-backend:
     runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ./simpleapi
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
