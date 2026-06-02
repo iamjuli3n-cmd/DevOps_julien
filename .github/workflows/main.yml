@@ -50,5 +50,4 @@ jobs:
       # Étape 4 : compiler le code et exécuter les tests avec Maven
       - name: Build and test with Maven
         # Commande shell exécutée dans la machine virtuelle
-        run:  cd java_app 
-              mvn clean verify
+        run:  cd java_app && mvn clean verify
