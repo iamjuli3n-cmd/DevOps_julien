@@ -28,29 +28,47 @@ jobs:
       - name: Build and test with Maven
         run: mvn clean verify "-Djacoco.skip=true" "-Dmaven.test.skip=true"
 
-  # JOB 2 : Si les tests passent, on build et on push sur Docker Hub
-  build-and-push-docker:
-    needs: test-backend # Force GitHub à attendre la réussite du Job 1
+  # define job to build and publish docker image
+  build-and-push-docker-image:
+    needs: test-backend # run only when code is compiling and tests are passing
     runs-on: ubuntu-24.04
-    # Sécurité : On ne push l'image que si on est sur la branche principale (pas sur une PR)
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-    
+
+    # steps to perform in job
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Connexion à ton Docker Hub avec les secrets configurés juste avant
+      # ÉTAPE INDISPENSABLE NON REPRÉSENTÉE MAIS DEMANDÉE POUR LE PUSH : Se connecter à Docker Hub
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKER_BEARER }}
 
-      # Build de l'image à partir de ton Dockerfile et envoi sur le Hub
-      - name: Build and push backend image
-        uses: docker/build-push-action@v5
+      # 1. Le Backend (Ton API Java)
+      - name: Build image and push backend
+        uses: docker/build-push-action@v6
         with:
-          context: ./simpleapi # Vérifie bien que c'est le nom de ton dossier
-          file: ./simpleapi/Dockerfile
+          # chemin relatif vers le dossier contenant le Dockerfile du backend
+          context: ./simpleapi
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/simple-api-backend:latest
+          # Note: tags has to be all lower-case
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-simple-api:latest
+
+      # 2. La Database (A faire soi-même)
+      - name: Build image and push database
+        uses: docker/build-push-action@v6
+        with:
+          # Mets ici le nom de ton dossier contenant le Dockerfile de ta BDD (ex: ./database)
+          context: ./database 
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-database:latest
+
+      # 3. Le serveur HTTPD / Reverse Proxy (A faire soi-même)
+      - name: Build image and push httpd
+        uses: docker/build-push-action@v6
+        with:
+          # Mets ici le nom de ton dossier contenant le Dockerfile d'HTTPD (ex: ./httpd)
+          context: ./httpd
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
