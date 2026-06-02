@@ -30,8 +30,8 @@ jobs:
         # Action officielle pour installer Java
         uses: actions/setup-java@v4
         with:
-          # Version 11 de Java (compatible avec la plupart des projets)
-          java-version: '11'
+          # Version 21 de Java (compatible avec la plupart des projets)
+          java-version: '21'
           # Distribution Temurin (anciennement AdoptOpenJDK)
           distribution: 'temurin'
 
