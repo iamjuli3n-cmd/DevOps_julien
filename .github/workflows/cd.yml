@@ -47,6 +47,14 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/tp-devops-httpd:latest
 
+      # 4. Le Frontend 
+      - name: Build image and push frontend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./devops-front-main # Mets le nom exact de ton dossier front
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/tp-devops-frontend:latest
+
 
   deploy-application:
     runs-on: ubuntu-latest
