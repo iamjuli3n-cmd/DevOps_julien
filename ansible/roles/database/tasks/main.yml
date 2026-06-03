@@ -1,0 +1,14 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for roles/database
+- name: Run Database Container
+  docker_container:
+    name: my-database
+    image: iamjuli3n78/tp-devops-database:latest
+    networks:
+      - name: app-network
+    env:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "mysecretpassword"
+      POSTGRES_DB: "db"
+    restart_policy: always
