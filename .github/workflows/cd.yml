@@ -5,12 +5,13 @@ on:
     workflows: ["Continuous Integration (CI)"] # Écoute le fichier CI pour déclencher ce workflow CD
     types:
       - completed
-
+    branches:
+      - main
 jobs:
   build-and-push-docker-image:
     if:  >
       github.event.workflow_run.conclusion == 'success' && 
-      (github.event.workflow_run.head_branch == 'main' || github.event.workflow_run.head_branch == 'master')
+      (github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-24.04
 
     steps:
@@ -46,36 +47,3 @@ jobs:
           context: ./hhtp_server
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/tp-devops-httpd:latest
-
-      # 4. Le Frontend 
-      - name: Build image and push frontend
-        uses: docker/build-push-action@v6
-        with:
-          context: ./devops-front-main # Mets le nom exact de ton dossier front
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/tp-devops-frontend:latest
-
-
-  deploy-application:
-    runs-on: ubuntu-latest
-    needs: build-and-push-docker-image # Ne se lance que si les images ont bien été poussées
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install Ansible
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ansible
-
-      - name: Deploy using Ansible Playbook
-        env:
-          ANSIBLE_HOST_KEY_CHECKING: 'False'
-        run: |
-          # 1. On extrait la clé SSH
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
-          chmod 600 private_key.pem
-          
-          # 2. On lance Ansible avec les bons chemins vers le dossier 'ansible/'
-          ansible-playbook -i ansible/inventories/setup.yml ansible/playbook.yml --private-key=private_key.pem -u admin
