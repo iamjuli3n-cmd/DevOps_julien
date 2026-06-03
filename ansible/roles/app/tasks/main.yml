@@ -4,12 +4,13 @@
 - name: Run Backend Application
   docker_container:
     name: my-app
-    image: iamjuli3n78/tp-devops-simple-api:latest
+    image: "{{ docker_username }}/tp-devops-simple-api:latest"
+    pull: true
     recreate: true
     networks:
       - name: app-network
     env:
-      USER_DB_URL: "jdbc:postgresql://mon-postgres-container-2:5432/db"
-      USER_DB: "postgres"
-      USER_DB_PASSWORD: "mysecretpassword"
+      USER_DB_URL: "jdbc:postgresql://my-database:5432/{{ db_name }}"
+      USER_DB: "{{ db_user }}"
+      USER_DB_PASSWORD: "{{ db_password }}"
     restart_policy: always

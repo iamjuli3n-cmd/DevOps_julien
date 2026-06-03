@@ -5,6 +5,8 @@
   docker_container:
     name: my-database
     image: iamjuli3n78/tp-devops-database:latest
+    pull: true
+    recreate: true
     networks:
       - name: app-network
     env:
