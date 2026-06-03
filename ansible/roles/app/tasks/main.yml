@@ -1,0 +1,15 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for roles/app*
+- name: Run Backend Application
+  docker_container:
+    name: my-app
+    image: iamjuli3n78/tp-devops-simple-api:latest
+    recreate: true
+    networks:
+      - name: app-network
+    env:
+      USER_DB_URL: "jdbc:postgresql://mon-postgres-container-2:5432/db"
+      USER_DB: "postgres"
+      USER_DB_PASSWORD: "mysecretpassword"
+    restart_policy: always
