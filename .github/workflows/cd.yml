@@ -47,3 +47,28 @@ jobs:
           context: ./hhtp_server
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/tp-devops-httpd:latest
+
+
+  deploy-application:
+    runs-on: ubuntu-latest
+    needs: build-and-push-docker-image # Ne se lance que si les images ont bien été poussées
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
+
+      - name: Deploy using Ansible Playbook
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: 'False' # Évite le blocage de confirmation SSH
+        run: |
+          # 1. On extrait la clé SSH stockée secrètement dans GitHub vers un fichier temporaire
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+          
+          # 2. On lance Ansible en lui passant la clé privée
+          ansible-playbook -i inventories/setup.yml playbook.yml --private-key=private_key.pem -u admin
