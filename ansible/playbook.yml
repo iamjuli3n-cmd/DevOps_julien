@@ -14,6 +14,8 @@
       community.docker.docker_container:
         name: my-frontend
         image: "{{ docker_username }}/tp-devops-frontend:latest"
+        pull: true
+        recreate: true
         state: started
         restart_policy: always
         networks:
