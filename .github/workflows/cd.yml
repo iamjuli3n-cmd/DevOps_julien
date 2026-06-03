@@ -74,14 +74,13 @@ jobs:
         env:
           ANSIBLE_HOST_KEY_CHECKING: 'False'
         run: |
-          # 1. On extrait la clé SSH
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
           chmod 600 private_key.pem
-          
-          # On injecte les secrets en tant que variables Ansible (-e)
+
           ansible-playbook -i ansible/inventories/setup.yml ansible/playbook.yml \
-            --private-key=private_key.pem -u admin \
-            -e "db_name=${{ secrets.DB_NAME }} \
-                db_user=${{ secrets.DB_USER }} \
-                db_password=${{ secrets.DB_PASSWORD }}" \
-                docker_username=${{ secrets.DOCKER_USERNAME }}"
+            --private-key=private_key.pem \
+            -u admin \
+            -e "db_name=${{ secrets.DB_NAME }}" \
+            -e "db_user=${{ secrets.DB_USER }}" \
+            -e "db_password=${{ secrets.DB_PASSWORD }}" \
+            -e "docker_username=${{ secrets.DOCKER_USERNAME }}"
