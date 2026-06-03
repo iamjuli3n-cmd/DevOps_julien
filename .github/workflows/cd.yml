@@ -72,11 +72,11 @@ jobs:
 
       - name: Deploy using Ansible Playbook
         env:
-          ANSIBLE_HOST_KEY_CHECKING: 'False' # Évite le blocage de confirmation SSH
+          ANSIBLE_HOST_KEY_CHECKING: 'False'
         run: |
-          # 1. On extrait la clé SSH stockée secrètement dans GitHub vers un fichier temporaire
+          # 1. On extrait la clé SSH
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
           chmod 600 private_key.pem
           
-          # 2. On lance Ansible en lui passant la clé privée
-          ansible-playbook -i inventories/setup.yml playbook.yml --private-key=private_key.pem -u admin
+          # 2. On lance Ansible en pointant vers le dossier 'ansible/'
+          ansible-playbook -i ansible/inventories/setup.yml ansible/playbook.yml --private-key=private_key.pem -u admin
