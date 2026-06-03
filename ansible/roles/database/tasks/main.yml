@@ -8,7 +8,7 @@
     networks:
       - name: app-network
     env:
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "mysecretpassword"
-      POSTGRES_DB: "db"
+      POSTGRES_USER: "{{ db_user }}"
+      POSTGRES_PASSWORD: "{{ db_password }}"
+      POSTGRES_DB: "{{ db_name }}"
     restart_policy: always
