@@ -83,4 +83,5 @@ jobs:
             --private-key=private_key.pem -u admin \
             -e "db_name=${{ secrets.DB_NAME }} \
                 db_user=${{ secrets.DB_USER }} \
-                db_password=${{ secrets.DB_PASSWORD }}"
+                db_password=${{ secrets.DB_PASSWORD }}" \
+                docker_username=${{ secrets.DOCKER_USERNAME }}"

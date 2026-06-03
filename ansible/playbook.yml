@@ -2,8 +2,14 @@
   gather_facts: true
   become: true
 
-  # frontend deployé avant
-  tasks:
+  roles:
+    - docker
+    - network
+    - database
+    - app
+    - proxy
+
+  post_tasks:
     - name: Run Frontend Container
       community.docker.docker_container:
         name: my-frontend
@@ -14,10 +20,3 @@
           - name: app-network
         exposed_ports:
           - "80"
-
-  roles:
-    - docker
-    - network
-    - database
-    - app
-    - proxy
