@@ -11,4 +11,5 @@
       - "80:80"
     env:
       BACKEND_URL: "http://my-app:8080"
+      FRONTEND_URL: "my-frontend"
     restart_policy: always

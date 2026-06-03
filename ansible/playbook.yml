@@ -2,9 +2,22 @@
   gather_facts: true
   become: true
 
+  # frontend deployé avant
+  tasks:
+    - name: Run Frontend Container
+      community.docker.docker_container:
+        name: my-frontend
+        image: "{{ docker_username }}/tp-devops-frontend:latest"
+        state: started
+        restart_policy: always
+        networks:
+          - name: app-network
+        exposed_ports:
+          - "80"
+
   roles:
     - docker
     - network
     - database
-    - app*
+    - app
     - proxy
