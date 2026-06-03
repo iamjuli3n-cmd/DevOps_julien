@@ -9,7 +9,7 @@ on:
   pull_request:
 
 jobs:
-  # JOB 1 : Exécution des tests et compilation
+  # JOB 1 : Exécution des tests et compilation fh
   test-backend:
     runs-on: ubuntu-latest
     defaults:

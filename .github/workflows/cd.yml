@@ -2,15 +2,16 @@ name: Continuous Delivery (CD)
 
 on:
   workflow_run:
-    workflows: ["Continuous Integration (CI)"] # Écoute le fichier CI
+    workflows: ["Continuous Integration (CI)"] # Écoute le fichier CI pour déclencher ce workflow CD
     types:
       - completed
-
+    branches:
+      - main
 jobs:
   build-and-push-docker-image:
     if:  >
       github.event.workflow_run.conclusion == 'success' && 
-      (github.event.workflow_run.head_branch == 'main' || github.event.workflow_run.head_branch == 'master')
+      (github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-24.04
 
     steps:
