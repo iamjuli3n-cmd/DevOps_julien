@@ -1,9 +1,9 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # tasks file for roles/app
-- name: Run Backend Application
+- name: Run Backend Applications (Redundancy)
   docker_container:
-    name: my-app
+    name: "{{ item }}"
     image: "{{ docker_username }}/tp-devops-simple-api:latest"
     pull: true
     recreate: true
@@ -14,3 +14,6 @@
       USER_DB: "{{ db_user }}"
       USER_DB_PASSWORD: "{{ db_password }}"
     restart_policy: always
+  loop:
+    - backend-blue
+    - backend-green
